@@ -178,16 +178,16 @@ print(f<span class="code-str">"[*] 正在對 {url} 進行初步資訊收集...
 
     Note over Attacker,FS: 步驟 1：Session 注入 (Session Injection)
     Attacker->>Upload: POST multipart 請求 (夾帶 Payload)
-    Note right of Attacker: Cookie: PHPSESSID=getflag123<br/>Field: PHP_SESSION_UPLOAD_PROGRESS=&lt;?php system("cat /etc/flag.txt"); ?&gt;
+    Note right of Attacker: Cookie: PHPSESSID=getflag123<br/>Payload: system("cat /etc/flag.txt")
     Upload->>FS: 寫入進度與 Payload 至 Session 檔案
-    Note right of Upload: 檔案: /var/lib/php/sessions/sess_getflag123
+    Note right of Upload: 建立檔案: sess_getflag123
     Upload-->>Attacker: 回傳 200 OK (Session 檔案已就緒)
 
     Note over Attacker,Engine: 步驟 2：觸發本地檔案包含 (LFI to RCE)
     Attacker->>View: GET view.php?file=/var/lib/php/sessions/sess_getflag123
     View->>FS: include() 載入該 Session 檔案
     FS-->>View: 回傳含有 PHP 標籤的文字內容
-    View->>Engine: 解析並執行 system("cat /etc/flag.txt")
+    View->>Engine: 解析並執行指令 (cat /etc/flag.txt)
     Engine-->>View: 輸出旗標內容
     View-->>Attacker: 回傳 HTTP 回應 (成功取得 Flag)
 </pre>
