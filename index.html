@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="PHP2Shell Lab 授權教學靶機滲透測試練習報告；利用鏈原理、風險分析與修補建議。">
+<title>PHP2Shell Lab｜紅隊滲透測試報告</title>
+<style>
+:root{--bg:#0c0e13;--panel:#141820;--line:#2b303c;--text:#e5e8ef;--muted:#a9b2c3;--red:#ff6475;--amber:#ffc27a;--green:#8ce1bd;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:28px}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.85}a{color:#a8cfff;text-underline-offset:4px}a:hover{color:#fff}a:focus-visible{outline:2px solid var(--red);outline-offset:5px}code{font-family:var(--mono);font-size:.88em;overflow-wrap:anywhere;color:#f8b7bf;background:#20232d;padding:.12em .35em;border-radius:4px}p{margin:.7em 0 1em}h1,h2,h3{line-height:1.4}h1{font-size:clamp(2.3rem,5vw,4rem);letter-spacing:-.045em;margin:16px 0}h2{font-size:1.55rem;margin:0 0 24px}h3{font-size:1.12rem;margin:12px 0}strong{color:#fff}.shell{max-width:1320px;margin:auto;padding:0 40px}.topbar{border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;font:12px var(--mono);letter-spacing:.09em;color:var(--muted)}.brand{color:#f1f3f7;font-weight:700}.brand::before{content:"";display:inline-block;width:9px;height:9px;background:var(--red);margin-right:12px;box-shadow:0 0 18px #ff647560}.private{color:var(--red)}.hero{padding:66px 0 44px;position:relative}.eyebrow,.section-no{font:12px var(--mono);letter-spacing:.12em;color:var(--red)}.hero p{max-width:760px;color:var(--muted);font-size:1.08rem}.meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.pill{border:1px solid var(--line);border-radius:5px;padding:5px 12px;font:12px/1.7 var(--mono);color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);background:var(--panel);margin:0 0 42px;border-radius:10px}.metric{padding:22px 26px;border-right:1px solid var(--line)}.metric:last-child{border:0}.metric b{display:block;font:26px/1.5 var(--mono);color:#fff}.metric span{font-size:.83rem;color:var(--muted)}.layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:50px}.toc{position:sticky;top:28px;align-self:start;font-size:.86rem;padding-bottom:28px}.toc-label{font:11px var(--mono);color:var(--muted);letter-spacing:.15em;margin-bottom:18px}.toc a{display:block;text-decoration:none;color:var(--muted);border-left:1px solid var(--line);padding:8px 14px}.toc a:hover{border-color:var(--red);color:var(--text);background:var(--panel)}main{min-width:0}section{padding:0 0 44px;margin-bottom:36px;border-bottom:1px solid var(--line)}.section-no{display:block;margin-bottom:10px}.lead{font-size:1.08rem}.note{padding:18px 22px;border-left:3px solid var(--amber);background:#1c1b1b;border-radius:0 7px 7px 0;font-size:.92rem;color:#d5c9b8}.note strong{color:var(--amber)}.evidence{border-color:var(--green);background:#12201e;color:#bdd8ce}.evidence strong{color:var(--green)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card{padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:9px}.card p{font-size:.94rem}.card p:last-child{margin-bottom:0}.card-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font:12px var(--mono);color:var(--muted)}.severity{font:11px/1.6 var(--mono);border-radius:4px;padding:3px 8px;font-weight:700;white-space:nowrap}.critical{color:#ff9aa7;background:#51212d}.high{color:#ffd09a;background:#443121}.caption{font-size:.85rem;color:var(--muted);margin-top:12px}.diagram-wrap{padding:24px 16px;background:#11151d;border:1px solid var(--line);border-radius:9px;overflow-x:auto}.mermaid{margin:0;font-family:var(--mono);font-size:.8rem;white-space:pre}.mermaid svg{display:block;min-width:760px;margin:auto}.timeline{list-style:none;padding:0 0 0 18px;margin:30px 0 0;border-left:1px solid #5c3440;counter-reset:steps}.timeline li{position:relative;padding:0 0 24px 22px;counter-increment:steps}.timeline li::before{content:"";position:absolute;left:-24px;top:9px;width:10px;height:10px;border:2px solid var(--red);background:var(--bg);border-radius:50%}.timeline b{display:block}.timeline b::before{content:"0" counter(steps) " / ";font:12px var(--mono);color:var(--red)}.timeline p{margin:5px 0 0;color:var(--muted);font-size:.94rem}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%;font-size:.91rem}th,td{text-align:left;padding:15px 18px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#1b202a;color:#c6cddb;font-size:.8rem}td{background:#12161e}tr:last-child td{border-bottom:0}.status{color:var(--amber)}.repair{margin-top:24px}.config{font-family:var(--mono);font-size:.84rem;line-height:1.9;background:#10131a;border:1px solid var(--line);border-radius:7px;padding:18px;white-space:pre-wrap;overflow-wrap:anywhere;color:#a6dfc9}.recon-svg{width:100%;height:auto;display:block}.sources{font-size:.86rem;color:var(--muted);padding-left:20px}.sources li{margin:8px 0}.footer{padding:0 0 32px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font:11px/1.8 var(--mono)}.flag{display:inline-block;font:1.1rem var(--mono);padding:12px 18px;color:var(--green);border:1px solid #335d50;background:#10221d;border-radius:6px}ul{padding-left:22px}li{margin:5px 0}.muted{color:var(--muted)}
+@media(max-width:1000px){.layout{grid-template-columns:160px minmax(0,1fr);gap:28px}.grid{grid-template-columns:1fr}.shell{padding:0 26px}}
+@media(max-width:720px){.shell{padding:0 20px}.topbar{font-size:10px;align-items:start}.hero{padding:42px 0 30px}.metrics{grid-template-columns:1fr 1fr}.metric{padding:16px}.metric:nth-child(2){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}.metric b{font-size:23px}.layout{display:block}.toc{position:static;display:flex;overflow:auto;gap:6px;padding:0 0 24px;margin-bottom:20px}.toc-label{display:none}.toc a{white-space:nowrap;border:1px solid var(--line);border-radius:4px;padding:6px 12px}.card{padding:20px}h2{font-size:1.35rem}.footer{flex-direction:column}.diagram-wrap{padding:16px 10px}th,td{padding:12px;min-width:90px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:#fff;color:#202530}.shell{max-width:none;padding:0}.topbar,.toc{display:none}.layout{display:block}.hero{padding-top:0}section{break-inside:auto}.card,.metric,td,th,.note,.diagram-wrap,.config{background:#fff;color:#202530;border-color:#ccc}.card{break-inside:avoid}strong,h1,h2,h3,.metric b{color:#111}.muted,.caption,.hero p{color:#444}.metrics{background:#fff}a{color:#234e78}.severity{border:1px solid #aaa}.mermaid svg{min-width:0}.flag{color:#174b39;background:#fff}.footer{color:#444}}
+</style>
+<style id="enhance">
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--display:'Fraunces',Georgia,serif}
+#scroll-progress{position:fixed;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--red),var(--amber));z-index:100;transition:width .08s linear}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(12,14,19,.72);backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(140%)}
+h1{font-family:var(--display);font-weight:600}
+.section-no{font-family:var(--display);font-style:italic;font-size:13px}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.is-visible{opacity:1;transform:none}
+.card{transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s}
+.card:hover{transform:translateY(-4px);border-color:var(--red);box-shadow:0 18px 40px -20px rgba(255,100,117,.35)}
+.metric{transition:background .3s}
+.metric:hover{background:#1a2029}
+.toc a{transition:border-color .25s,color .25s,background .25s,padding-left .25s}
+.toc a.active{border-color:var(--red);color:#fff;background:var(--panel);padding-left:18px}
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-25% -10% auto -10%;height:440px;background:radial-gradient(ellipse at 18% 0%,rgba(255,100,117,.16),transparent 60%),radial-gradient(ellipse at 82% 25%,rgba(255,194,122,.1),transparent 55%);pointer-events:none;z-index:-1}
+@media(prefers-reduced-motion:no-preference){.hero h1{animation:rise .9s cubic-bezier(.16,1,.3,1) both}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important}.hero h1{animation:none}}
+</style>
+</head>
+<body>
+<div id="scroll-progress" aria-hidden="true"></div>
+<div class="shell">
+<header class="topbar"><span class="brand">RED TEAM / LAB NOTES</span><span class="private">LOCAL VIEW ONLY · 教學練習留存</span></header>
+<div class="hero">
+<div class="eyebrow">AUTHORIZED SECURITY ASSESSMENT · 2026 / 11 / 08</div>
+<h1>PHP2Shell Lab<br>紅隊滲透測試報告</h1>
+<p>從 Session 注入到本地檔案包含，梳理遠端程式碼執行的信任邊界，以及精簡容器中的驗證與修補思路。</p>
+<div class="meta"><span class="pill">TARGET / 課程授權教學靶機</span><span class="pill">STACK / Nginx + PHP 8.3.35</span><span class="pill">FORMAT / 原理與示意紀錄</span></div>
+</div>
+<div class="metrics" aria-label="報告概況"><div class="metric"><b>04</b><span>課程情境發現</span></div><div class="metric"><b>02 / 02</b><span>Critical / High</span></div><div class="metric"><b>RCE</b><span>依學員敘述達成</span></div><div class="metric"><b>REDACTED</b><span>flag 已遮蔽</span></div></div>
+<div class="layout">
+<nav class="toc" aria-label="章節目錄"><div class="toc-label">REPORT CONTENTS</div><a href="#summary">01　摘要</a><a href="#scope">02　範圍與授權</a><a href="#recon">03　資訊收集</a><a href="#findings">04　漏洞分析</a><a href="#chain">05　攻擊鏈與流程</a><a href="#post">06　權限取得後行動</a><a href="#matrix">07　發現總表</a><a href="#fix">08　修補建議</a><a href="#conclusion">09　結論</a></nav>
+<main>
+<section id="summary"><span class="section-no">01 / EXECUTIVE SUMMARY</span><h2>摘要</h2>
+<p class="lead">本次練習以老師律定並授權的 <strong>PHP2Shell Lab</strong> 為目標，主題為 CVE-2026-109618／CVE-2026-109619 所涉及的 PHP 請求處理記憶體安全問題，包含 <code>multipart/form-data</code> 相關的 Heap Use-After-Free（堆積記憶體釋放後使用）風險。</p>
+<p>依學員提供的練習結果，透過 <strong>Session Injection → LFI → RCE</strong> 利用鏈取得 PHP 執行環境中的程式碼執行能力，並完成 flag 讀取驗證。本文僅保留遮蔽後的結果：</p><div class="flag" aria-label="已遮蔽的 flag">flag{REDACTED}</div>
+<p class="note"><strong>證據界線：</strong>本報告依題目與學員敘述整理；未提供封包、畫面、原始碼或執行日誌，也未由本次文件製作程序連線重測。取得 flag 為學員回報結果；各項設定與 LFI 尚待原始證據核對。Session 注入加上 LFI 可獨立形成 RCE，不能以此結果直接認定兩項 CVE 均已實際觸發。</p>
+</section>
+<section id="scope"><span class="section-no">02 / SCOPE &amp; AUTHORIZATION</span><h2>測試範圍與授權聲明</h2>
+<p>依學員聲明，本次目標為老師律定的學習性靶機，課程允許使用 AI 輔助工具進行原理釐清、練習分析與報告整理。授權範圍限於 PHP2Shell Lab 與課程指定的驗證資源；不涵蓋其他主機、第三方系統或公開服務。</p>
+<ul><li><strong>涵蓋項目：</strong>網頁與環境資訊、PHP 請求處理、Session 行為、<code>view.php</code> 的包含邏輯，以及容器內最低限度的 flag 驗證。</li><li><strong>紀錄方式：</strong>僅保留流程原理、風險與修補建議；不收錄實際目標位址、可執行利用程式或未遮蔽 flag。</li><li><strong>保存與邊界：</strong>本檔供本地檢視，不公開發布。持久化、橫向移動、破壞資料及對外資料傳輸不列入本次紀錄範圍。</li></ul>
+<p class="caption">授權依據為學員對課程規範的敘述；本檔不宣稱已查核獨立簽署的授權文件。頁面日期為整理日期，不代表實際測試時間。</p>
+</section>
+<section id="recon"><span class="section-no">03 / RECONNAISSANCE</span><h2>資訊收集</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">項目</th><th scope="col">課程情境資訊</th><th scope="col">判讀與限制</th></tr></thead><tbody>
+<tr><td>前端服務</td><td>Nginx</td><td>負責接收 HTTP 請求並轉交 PHP；未提供 Nginx 版本或設定檔。</td></tr>
+<tr><td>執行環境</td><td>PHP 8.3.35；以 PHP-FPM 架構說明</td><td>版本依題目提供；仍應核對實際 FPM 建置與套件回補狀態。</td></tr>
+<tr><td>首頁提示</td><td>PHP2Shell、兩項 CVE、multipart 請求處理</td><td>依題意概述，非首頁原文引述；提示僅用來形成假設。</td></tr>
+<tr><td>應用入口</td><td><code>view.php</code>；Session 與上傳進度功能</td><td>需以程式碼、設定與請求／回應紀錄確認資料流。</td></tr>
+</tbody></table></div>
+<p>官方公告列出的 PHP 8.3 分支修補版本為 <strong>8.3.36</strong>。題目所列 8.3.35 早於該版本；但版本字串本身無法排除發行商回補修補程式的可能，也不能證明特定利用已成功。參見 <a href="https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w">PHP 官方 OOM 公告</a>與<a href="https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp">全域狀態公告</a>。</p>
+</section>
+<section id="findings"><span class="section-no">04 / TECHNICAL FINDINGS</span><h2>漏洞分析</h2>
+<p class="muted">以下嚴重度為本靶機利用鏈的情境評估；設定開啟本身不等同於獨立的高風險漏洞。未另行計算各項 CVSS 分數。</p>
+<div class="grid">
+<article class="card"><div class="card-top"><span>F-01 · MEMORY SAFETY</span><span class="severity critical">Critical</span></div><h3>PHP multipart/form-data Heap UAF</h3>
+<p><strong>原理：</strong>CVE-2026-109618 涉及記憶體不足（OOM）中斷造成無效狀態；CVE-2026-109619 涉及工作行程保留已失效的跨請求狀態。multipart 處理可成為相關觸發面，兩者並非同一個缺陷。</p>
+<p><strong>影響：</strong>適當條件下可導致 PHP 工作行程身分的 RCE。官方對 OOM 案例的完整驗證以 mod_php 為主，不能直接推定本 Lab 的 FPM 已完成相同利用。<a href="https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w">OOM 來源</a>／<a href="https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp">狀態殘留來源</a>。</p>
+<p><strong>偵測與處置：</strong>關聯 multipart 請求、OOM、FPM 異常退出及重啟；優先升級。<strong>狀態：</strong>版本風險待核對，UAF 實際觸發未獨立確認。</p></article>
+<article class="card"><div class="card-top"><span>F-02 · SESSION WRITE</span><span class="severity high">High</span></div><h3>session.upload_progress.enabled 未關閉</h3>
+<p><strong>原理：</strong>上傳進度功能可在上傳處理期間，把請求衍生的進度資料寫入 Session。若採檔案式儲存，便可能形成包含不受信任內容的本地檔案。參見 <a href="https://www.php.net/manual/en/session.upload-progress.php">PHP 上傳進度手冊</a>。</p>
+<p><strong>影響：</strong>與可控 Session ID、可讀取的儲存位置及 LFI 組合後，才可能將資料轉為可執行內容；開啟此功能本身不代表 RCE。</p>
+<p><strong>偵測與處置：</strong>比對異常上傳與 Session 檔案變更；無需求即停用。<strong>狀態：</strong>依題目列入，尚缺執行環境設定佐證。</p></article>
+<article class="card"><div class="card-top"><span>F-03 · SESSION TRUST</span><span class="severity high">High</span></div><h3>use_strict_mode=0 允許偽造 Session ID</h3>
+<p><strong>原理：</strong>正確設定名稱為 <code>session.use_strict_mode</code>。關閉時，PHP 可接受客戶端指定、尚未初始化的 Session ID，增加 Session 固定及可預測儲存目標的風險。這不等同於自動取得他人的登入狀態。參見 <a href="https://www.php.net/manual/en/session.configuration.php#ini.session.use-strict-mode">PHP 設定說明</a>。</p>
+<p><strong>影響：</strong>降低 Session 注入鏈的定位難度；仍受儲存處理器與權限限制。</p>
+<p><strong>偵測與處置：</strong>觀察由客戶端指定的新 ID 與異常建檔，日誌避免記錄完整 Session ID；啟用嚴格模式。<strong>狀態：</strong>依題目列入，待核對有效設定與實際行為。</p></article>
+<article class="card"><div class="card-top"><span>F-04 · FILE INCLUSION</span><span class="severity critical">Critical</span></div><h3>view.php 本地檔案包含（LFI）</h3>
+<p><strong>原理：</strong>若使用者輸入可影響 <code>include</code>／<code>require</code> 的本地路徑，應用便可能包含原本不應執行的 Session 檔案。</p>
+<p><strong>影響：</strong>當檔案含有能被 PHP 解譯的內容時，LFI 可升級為 RCE；若只是讀取文字而非執行包含，則不能直接推定程式碼執行。</p>
+<p><strong>偵測與處置：</strong>關聯 view.php 的異常路徑、包含失敗錯誤及 Session 存取；改用固定模板映射。<strong>狀態：</strong>學員回報鏈成立，待原始碼或去識別化回應佐證。</p></article>
+</div></section>
+<section id="chain"><span class="section-no">05 / ATTACK CHAIN</span><h2>攻擊鏈與利用流程</h2>
+<p>下圖示意 Session 資料寫入、LFI 包含與 PHP 執行的責任順序；<code>view.php</code> 為 PHP-FPM 內執行的應用邏輯，圖中獨立列出以凸顯信任邊界。</p>
+<div class="diagram-wrap" role="group" aria-label="Session Injection 到 RCE 的時序圖；文字步驟見下方時間軸">
+<pre class="mermaid">sequenceDiagram
+    autonumber
+    actor A as 攻擊者
+    participant N as Nginx
+    participant P as PHP-FPM
+    participant F as 檔案系統
+    participant V as view.php
+    Note over A,V: 授權 Lab 示意；不包含可執行 payload
+    A->>N: 上傳請求，帶入指定 Session 識別與示意資料
+    N->>P: 轉交 multipart 請求
+    P->>P: 解析上傳，處理 Session 與進度資料
+    P->>F: 將請求衍生內容寫入 Session 檔案
+    Note over P,F: Session Injection：資料仍須存在且可被讀取
+    A->>N: 請求 view.php，影響待包含的本地資源
+    N->>P: 轉交檢視請求
+    P->>V: 執行應用的檔案包含邏輯
+    V->>F: LFI 讀取指定的 Session 檔案
+    F-->>V: 回傳含示意程式片段的內容
+    V->>P: 以 PHP 包含語意解譯內容
+    Note over P,V: RCE：沿用 PHP 工作行程權限
+    P->>F: 最低限度環境探勘與授權 flag 讀取
+    F-->>P: 驗證資料
+    P-->>N: 驗證回應
+    N-->>A: 確認結果，報告僅保留遮蔽 flag</pre>
+</div>
+<p id="diagram-status" class="caption" aria-live="polite">圖表由 jsDelivr 載入 Mermaid 後繪製；無網路時保留原始時序文字與下方時間軸。</p>
+<p class="note"><strong>成立條件：</strong>此示意假設檔案式 Session 儲存、內容寫入後仍存在、PHP 可讀取該檔，且 view.php 使用包含語意。上傳進度清理、請求時序、Session 鎖定與 Nginx 緩衝均可能影響結果。圖中不將 UAF 畫成必要步驟，因目前資料無法證明它與這條鏈之間的實際因果。</p>
+<ol class="timeline"><li><b>建立假設</b><p>依首頁提示與 PHP 版本，拆分記憶體安全風險、Session 寫入面及檔案包含面，分別核對前提。</p></li><li><b>Session Injection</b><p>在課程情境中，由客戶端影響 Session 識別與上傳進度資料，讓受控示意內容進入 Session 儲存；不在此保留實際內容或請求格式。</p></li><li><b>確認資料可達性</b><p>釐清 Session 儲存處理器、有效路徑、存取權限與清理時機。若資料已清除或不可讀，後續包含便無法依此方式成立。</p></li><li><b>LFI 觸發</b><p>view.php 的不安全路徑選擇將 Session 檔案當作可包含資源，跨越「不受信任資料」與「應用程式碼」的邊界。</p></li><li><b>驗證 RCE 與 flag</b><p>以最低限度、非破壞性的結果確認 PHP 執行能力；依學員敘述完成授權 flag 驗證。RCE 不代表 root 權限或容器逃逸。</p></li></ol>
+</section>
+<section id="post"><span class="section-no">06 / POST-EXPLOITATION</span><h2>權限取得後行動</h2>
+<p>依練習情境，容器缺少 <code>ps</code>、<code>netstat</code> 等工具。工具不存在並不代表系統資訊無法取得：Linux 的 <code>/proc</code> 由核心動態提供行程與網路狀態，PHP 的 <code>file_get_contents</code> 可讀取可存取的檔案，<code>scandir</code> 則可列出可讀目錄；兩者不必啟動外部 shell。</p>
+<figure style="margin:24px 0"><div class="diagram-wrap">
+<svg class="recon-svg" viewBox="0 0 820 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="recon-title recon-desc">
+<title id="recon-title">工具匱乏環境替代偵察手法</title><desc id="recon-desc">缺少 ps，可用 PHP 列舉 proc 內行程目錄及讀取狀態；缺少 netstat，可讀 proc 的網路表；缺少 ls 或 cat，可用 scandir 與 file_get_contents。全部受限於工作行程權限及容器可見範圍。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#ff8291" stroke-width="1.5"/></marker></defs>
+<g font-family="-apple-system, PingFang TC, Microsoft JhengHei, sans-serif" font-size="16" fill="#e5e8ef">
+<text x="28" y="28" fill="#a9b2c3" font-size="13">缺少的命令列工具</text><text x="326" y="28" fill="#a9b2c3" font-size="13">PHP 原生函數與核心介面</text>
+<g fill="#231b26" stroke="#67404c"><rect x="24" y="48" width="230" height="65" rx="8"/><rect x="24" y="134" width="230" height="65" rx="8"/><rect x="24" y="220" width="230" height="65" rx="8"/></g>
+<g fill="#15232a" stroke="#385b67"><rect x="322" y="48" width="472" height="65" rx="8"/><rect x="322" y="134" width="472" height="65" rx="8"/><rect x="322" y="220" width="472" height="65" rx="8"/></g>
+<g stroke="#ff8291" stroke-width="2" marker-end="url(#arrow)"><path d="M267 80H306"/><path d="M267 166H306"/><path d="M267 252H306"/></g>
+<text x="44" y="87">ps → 行程資訊</text><text x="44" y="173">netstat → 網路狀態</text><text x="44" y="259">ls / cat → 目錄與檔案</text>
+<text x="342" y="76">scandir：列舉 /proc 的數字目錄</text><text x="342" y="99" font-size="13" fill="#a9b2c3">file_get_contents：讀取行程 status / cmdline</text>
+<text x="342" y="162">file_get_contents：讀取 /proc/net</text><text x="342" y="185" font-size="13" fill="#a9b2c3">tcp / tcp6 等表格，須另行解讀欄位與編碼</text>
+<text x="342" y="248">scandir ＋ file_get_contents</text><text x="342" y="271" font-size="13" fill="#a9b2c3">列出授權目錄並讀取必要驗證資料</text>
+<text x="409" y="327" text-anchor="middle" fill="#8ce1bd" font-size="14">共同邊界：PHP 身分權限 · proc 掛載限制 · PID / 網路命名空間</text>
+</g></svg></div><figcaption class="caption">圖 2｜替代的是資訊存取管道，並未提升權限；手機可在圖框內橫向捲動檢視時序圖。</figcaption></figure>
+<ul><li><strong>行程資訊：</strong>概念上先列舉 <code>/proc</code> 的數字目錄，再讀取對應的 <code>status</code> 或 <code>cmdline</code>。後者通常以空字元分隔；行程可能在兩次讀取間結束，讀取失敗不必然代表防護阻擋。</li><li><strong>網路資訊：</strong><code>/proc/net/tcp</code>、<code>tcp6</code> 等內容是目前網路命名空間的核心表格，位址、連接埠與狀態碼須解碼；不能直接當成主機全貌，與行程對應也需額外資訊。</li><li><strong>檔案與環境：</strong>以 PHP 目錄列舉及檔案讀取能力辨識授權工作目錄、必要設定與驗證資源。flag 僅作成功判準，不保留真實值；未取得的 UID、路徑與輸出不在報告中臆造。</li></ul>
+<h3>補充練習紀錄：行程與應用原始碼觀察</h3>
+<p class="caption">來源：同目錄的第二份報告（index (2).html）。以下為該報告記載的觀察，尚未核對原始回應、程式碼內容或操作日誌；不據此提升既有發現的確認狀態。</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">觀察項目</th><th scope="col">第二份報告記載</th><th scope="col">判讀與限制</th></tr></thead><tbody>
+<tr><td>行程組成</td><td>透過 <code>/proc</code> 探勘，辨識 PID 1 為 <code>supervisord</code>，並觀察到 Nginx 與 PHP-FPM 行程。</td><td>可作為容器內服務組成的線索；僅能反映當時可見的 PID 命名空間，不能據此認定已取得宿主機資訊。</td></tr>
+<tr><td>啟動參數與環境變數</td><td>讀取行程的 <code>cmdline</code> 與 <code>environ</code>，該次環境變數檢視未發現其他 flag。</td><td>未發現僅適用於該次可讀範圍，不代表所有行程或檔案均無敏感資料。本報告不保留環境變數實值或完整啟動參數。</td></tr>
+<tr><td>應用原始碼與驗證邏輯</td><td>讀取 <code>check_flag.php</code> 後，觀察到 flag 驗證邏輯將正確答案直接寫入程式碼。</td><td>此為 RCE 後應用原始碼可讀的影響觀察，不等同於已確認可由公開網址直接下載原始碼；在教學靶機中也可能是刻意安排，不另列為獨立 High 漏洞。</td></tr>
+</tbody></table></div>
+<p><strong>防護與驗收：</strong>若實際應用需保護驗證資料，應避免將敏感值直接寫入應用原始碼，並以獨立權限邊界限制其存取；僅改放同一 PHP 身分可讀的檔案或環境變數，仍可能在 RCE 後暴露。回歸驗收應確認工作行程僅能讀取業務必要資料，並以去識別化紀錄佐證可見行程及設定範圍。</p>
+<p class="note evidence"><strong>防守觀點：</strong>移除系統工具只能減少部分操作便利性。應限制 PHP 工作行程可讀資料、隔離 Session 與模板、採最小權限並限制容器可見範圍。偵測需仰賴適當的主機／容器檔案存取遙測；Nginx 存取日誌本身不會記錄每次 PHP 讀檔。</p>
+</section>
+<section id="matrix"><span class="section-no">07 / FINDINGS MATRIX</span><h2>發現總表</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">編號／發現</th><th scope="col">嚴重度</th><th scope="col">確認狀態</th></tr></thead><tbody>
+<tr><td>F-01　PHP multipart／Heap UAF 風險<br><small>CVE-2026-109618／109619</small></td><td><span class="severity critical">Critical</span></td><td class="status">官方缺陷已確認；Lab 建置與 UAF 觸發待佐證</td></tr>
+<tr><td>F-02　上傳進度 Session 寫入面</td><td><span class="severity high">High</span></td><td class="status">依題目提供，待核對有效設定與寫入紀錄</td></tr>
+<tr><td>F-03　Session 嚴格模式未啟用</td><td><span class="severity high">High</span></td><td class="status">依題目提供，待核對新 ID 的接受行為</td></tr>
+<tr><td>F-04　view.php LFI</td><td><span class="severity critical">Critical</span></td><td class="status">學員回報利用鏈成功，待原始碼／回應佐證</td></tr>
+</tbody></table></div>
+<p class="caption">整體結果：依學員敘述已達 RCE 並取得 flag；本次僅製作報告，未獨立重測。F-02、F-03 的 High 評級來自其在本 Lab 利用鏈中的作用，不代表所有同設定部署均為 High。</p>
+</section>
+<section id="fix"><span class="section-no">08 / REMEDIATION</span><h2>修補建議</h2>
+<div class="repair"><h3>F-01｜升級 PHP，驗證所有工作行程已更新</h3><p>將 PHP 8.3.35 升級至 <strong>8.3.36 或同分支更新的安全修補版</strong>；若遷移分支，官方對這兩項 CVE 列出的修補起點為 8.2.35、8.4.27、8.5.12。使用發行商套件時核對回補公告，更新容器映像並重新建立／重啟所有 PHP-FPM 工作行程。修補版本依據：<a href="https://www.php.net/ChangeLog-8.php">PHP 官方變更紀錄</a>。</p>
+<p><strong>php.ini 配套：</strong>無上傳需求可設 <code>file_uploads = Off</code>，並在 Nginx 拒絕不需要的 multipart 請求；依業務縮小 <code>post_max_size</code>、<code>max_file_uploads</code> 與輸入限制。這些措施縮小曝險面，無法取代更新，也不存在適用所有部署的單一 ini 修補開關。</p><p><strong>驗收：</strong>由實際 FPM 執行環境確認修補版本與套件來源；在隔離 Lab 回歸測試，檢查工作行程與錯誤日誌。</p></div>
+<div class="repair"><h3>F-02｜停用不需要的上傳進度追蹤</h3><pre class="config">; php.ini 或對應 FPM 設定層；套用後重新載入工作行程
+session.upload_progress.enabled = Off
+session.upload_progress.cleanup = On</pre><p>清理機制僅為配套，不能保證資料從未寫入或消除時間窗。若業務需要進度追蹤，應另行設計不被 PHP 包含邏輯讀取的資料通道。<strong>版本：</strong>一併套用 F-01 升級；升級不會自動消除此設定的應用風險。</p><p><strong>驗收：</strong>確認 FPM 的有效設定已停用該功能，測試上傳不再建立對應的進度資料，且正常上傳功能仍可使用。</p></div>
+<div class="repair"><h3>F-03｜拒絕未初始化的客戶端 Session ID</h3><pre class="config">session.use_strict_mode = On
+session.use_only_cookies = On
+session.use_trans_sid = Off
+session.cookie_httponly = On
+session.cookie_samesite = Lax
+; 正式 HTTPS 部署另啟用 session.cookie_secure = On</pre><p>嚴格模式是主要控制；其他設定為防禦補強，無法修補 LFI。自訂 Session 處理器須實作相應 ID 驗證能力，登入及權限變更時也應重新產生識別碼。<strong>版本：</strong>依 F-01 升級，並重新確認處理器相容性。設定依據：<a href="https://www.php.net/manual/en/session.configuration.php">PHP Session 設定手冊</a>。</p><p><strong>驗收：</strong>合法新連線仍能建立 Session，而不存在的客戶端指定 ID 不被直接採用；確認登入流程與 Cookie 行為正常。</p></div>
+<div class="repair"><h3>F-04｜修正 view.php 的模板選擇邏輯</h3><p>將輸入限制為固定的頁面識別碼，由伺服器端白名單映射至固定模板；禁止把使用者提供的路徑直接傳入包含函數。若仍需處理路徑，應以正規化後的完整路徑確認目錄邊界，並拒絕白名單外的資源。</p><pre class="config">; 防禦配套，不能單獨阻止本地檔案包含
+allow_url_include = Off
+; session.save_path：設為獨立、非公開的專用目錄
+; open_basedir：依實際應用配置最小可讀範圍後再套用</pre><p><code>allow_url_include = Off</code> 主要限制 URL 包含，無法阻止本地 Session 檔案被包含。若 <code>open_basedir</code> 同時允許 Session 與模板目錄，也不能切斷此鏈；Session 移出網站根目錄亦不等於不可被 PHP 讀取。根本修補仍是固定模板映射與資料／程式碼分離。<strong>版本：</strong>依 F-01 升級；應用 LFI 須另外修正。參見 <a href="https://www.php.net/manual/en/ini.core.php#ini.open-basedir">open_basedir 手冊</a>與<a href="https://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-include">URL 包含設定</a>。</p><p><strong>驗收：</strong>白名單頁面正常顯示；任意路徑、Session 檔案與其他非模板資源皆遭拒絕，拒絕事件可追蹤且不揭露敏感路徑。</p></div>
+<p class="note evidence"><strong>修補優先順序：</strong>優先更新 PHP 並封堵 LFI，再收斂 Session 設定與可讀檔案範圍。於隔離 Lab 保存修補前後的去識別化證據，指派負責人並完成回歸驗收；Nginx、FPM 與應用日誌以請求識別碼關聯，避免記錄 flag 或完整 Session ID。</p>
+</section>
+<section id="conclusion"><span class="section-no">09 / CONCLUSION</span><h2>結論</h2>
+<p>依學員回報，本次 PHP2Shell Lab 練習完成 Session Injection、LFI、RCE 與 flag 驗證。核心教訓是：原本僅供儲存狀態的 Session 資料，一旦被不安全的包含邏輯當成程式碼，就能跨越信任邊界；缺少系統工具也無法阻止透過 PHP 與核心介面進行探勘。</p>
+<p>報告應分別記錄「官方確認的記憶體缺陷」、「靶機設定與應用缺陷」及「學員回報的成功結果」。目前證據可支援練習流程留存，仍不足以宣稱兩項 CVE 都已在 PHP-FPM 上觸發。後續以去識別化請求／回應、有效設定與修補回歸紀錄補足證據，才能完成可重現的驗證。</p>
+<details><summary>技術參考資料（官方來源）</summary><ol class="sources"><li><a href="https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w">PHP：CVE-2026-109618 — RCE via OOM corruption</a></li><li><a href="https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp">PHP：CVE-2026-109619 — RCE via stale global state</a></li><li><a href="https://www.php.net/ChangeLog-8.php">PHP 8 版本修補紀錄</a></li><li><a href="https://www.php.net/manual/en/session.upload-progress.php">PHP：Session Upload Progress</a>／<a href="https://www.php.net/manual/en/session.configuration.php">Session 設定</a></li><li><a href="https://www.php.net/manual/en/function.file-get-contents.php">PHP：file_get_contents</a>／<a href="https://www.php.net/manual/en/function.scandir.php">scandir</a>／<a href="https://docs.kernel.org/filesystems/proc.html">Linux 核心：proc 檔案系統</a></li></ol></details>
+<p class="caption">本頁僅 Mermaid 函式庫需透過 jsDelivr CDN 載入；正文、CSS 與偵察示意 SVG 均內嵌。程式未設定遙測或上傳功能；開啟時瀏覽器仍會對 CDN 發出函式庫下載請求。</p>
+</section>
+</main></div>
+<footer class="footer"><span>PHP2SHELL LAB / AUTHORIZED TRAINING RECORD</span><span>本地留存 · flag 已遮蔽 · 2026-11-08</span></footer>
+</div>
+<script type="module">
+const status = document.getElementById('diagram-status');
+try {
+  const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs');
+  mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'dark', fontFamily: 'PingFang TC, Microsoft JhengHei, sans-serif', themeVariables: { primaryColor: '#251d2a', primaryTextColor: '#e5e8ef', primaryBorderColor: '#9d5164', lineColor: '#b6c0d2', actorBkg: '#202531', actorBorder: '#69788d', actorTextColor: '#e5e8ef', signalColor: '#c7d0df', signalTextColor: '#e5e8ef', noteBkgColor: '#2d2730', noteTextColor: '#f1d7de', noteBorderColor: '#79505f' }, sequence: { useMaxWidth: true, wrap: true, actorMargin: 34, width: 130 } });
+  await mermaid.run({ querySelector: '.mermaid' });
+  status.textContent = '圖 1｜Session Injection → LFI 觸發 → RCE。僅描述原理，未包含請求 payload。';
+} catch (_) {
+  status.textContent = 'Mermaid CDN 無法載入或圖表繪製失敗。請參閱保留的時序原文及下方文字時間軸。';
+}
+</script>
+<script>
+try {
+  const bar = document.getElementById('scroll-progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  };
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  const sections = Array.from(document.querySelectorAll('main section[id]'));
+  const links = Array.from(document.querySelectorAll('.toc a'));
+  const activate = (id) => links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+
+  if ('IntersectionObserver' in window) {
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('is-visible'); revealObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    sections.forEach((s) => { s.classList.add('reveal'); revealObs.observe(s); });
+
+    const tocObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) activate(e.target.id); });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    sections.forEach((s) => tocObs.observe(s));
+  } else {
+    sections.forEach((s) => s.classList.add('is-visible'));
+  }
+} catch (_) { /* 強化層失敗不影響主要內容呈現 */ }
+</script>
+</body>
+</html>
